@@ -1,24 +1,43 @@
 import sys
 import random
-from PySide6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout 
+from PySide6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLayout, QFrame
 from PySide6.QtCore import Qt, QTimer
 import pyqtgraph as pg
 
 app = QApplication(sys.argv)
 
 janela = QWidget()
-janela.resize(800, 700)
+janela.setStyleSheet("background-color: black;")
+janela.resize(1000, 800)
 layout = QVBoxLayout(janela)
 
-texto_vel = QLabel("-- Km/h")
-texto_temp = QLabel("-- ºC")
+def criar_quadrado(titulo, valor_inicial):
+    quadrado = QFrame()
+    quadrado.setStyleSheet("border: 2px solid #555555; border-radius: 12px;")
+    caixa = QVBoxLayout(quadrado)
 
-for text in (texto_vel, texto_temp):
-    text.setAlignment(Qt.AlignCenter)
-    text.setStyleSheet("font-size: 60px; font-weight: bold;")
-    layout.addWidget(text)
+    label_titulo = QLabel(titulo)
+    label_titulo.setAlignment(Qt.AlignCenter)
+    label_titulo.setStyleSheet("font-size: 20px; color: #aaaaaa; border: none;")
+
+    label_valor = QLabel(valor_inicial)
+    label_valor.setAlignment(Qt.AlignCenter)
+    label_valor.setStyleSheet("font-size: 60px; font-weight: bold; color: white; border: none;")
+
+    caixa.addWidget(label_titulo)
+    caixa.addWidget(label_valor)
+    return quadrado, label_valor
+
+quadrado_vel, texto_vel = criar_quadrado("VELOCIDADE", "-- km/h")
+quadrado_temp, texto_temp = criar_quadrado("TEMPERATURA", "-- ºC")
+
+topo = QHBoxLayout()
+topo.addWidget(quadrado_vel)
+topo.addWidget(quadrado_temp)
+layout.addLayout(topo)
 
 grafico = pg.PlotWidget(title="Velocidade")
+grafico.setBackground("k")
 curva = grafico.plot(pen="y")
 layout.addWidget(grafico)
 
@@ -35,14 +54,12 @@ def atualizar():
     if len(historico) > 100:
         historico.pop(0)
     curva.setData(historico)
- 
+
     if temperatura > 65:
         cor = "red"
     else:
-        cor ="green"
-
-    texto_temp.setStyleSheet(f"font-size: 60px; font-weight: bold; color: {cor};")
-
+        cor = "green"
+    texto_temp.setStyleSheet(f"font-size: 60px; font-weight: bold; color: {cor}; border: none;")
 
 timer = QTimer()
 timer.timeout.connect(atualizar)
@@ -52,4 +69,4 @@ janela.show()
 sys.exit(app.exec())
 
 
-#colocar fundo preto e quadrados para as cenas da temperatura e dos km e ver como são na f1
+#ver como são os dashboards na f1
