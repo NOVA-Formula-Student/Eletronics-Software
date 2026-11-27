@@ -68,5 +68,4 @@ timer.start(500)
 janela.show()
 sys.exit(app.exec())
 
-
 #ver como são os dashboards na f1
